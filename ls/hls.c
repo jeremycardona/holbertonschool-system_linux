@@ -10,7 +10,7 @@
  *  Return: 0 exit
  */
 int main(void){
-    DIR *dir = opendir("test");
+    DIR *dir = opendir(".");
     struct dirent *read;
 
     while ((read = readdir(dir))){
