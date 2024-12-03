@@ -2,23 +2,38 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 /** 
- *  compare - comparison function for qsort
- *  @a: pointer to first element
- *  @b: pointer to second element
- *
- *  Return: negative, zero, or positive depending on lexicographical order.
+ *  swap - swaps two strings in the array.
+ *  @a: pointer to the first string
+ *  @b: pointer to the second string
  */
-int compare(const void *a, const void *b) {
-    return strcmp(*(const char **)a, *(const char **)b);
+void swap(char **a, char **b) {
+    char *temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
 /** 
- *  main - list the contents of the current directory excluding hidden files, sorted.
+ *  sort - sorts the array of strings using bubble sort.
+ *  @arr: array of strings
+ *  @n: number of elements in the array
+ */
+void sort(char *arr[], int n) {
+    int i, j;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (strcmp(arr[j], arr[j + 1]) > 0) {
+                swap(&arr[j], &arr[j + 1]);
+            }
+        }
+    }
+}
+
+/** 
+ *  main - lists the contents of the current directory excluding hidden files, sorted.
  *
- *  Description: Program that lists the contents of the current directory,
- *  excluding hidden files and folders, in sorted order.
  *  Return: 0 on success, 1 on failure.
  */
 int main(void) {
@@ -35,20 +50,21 @@ int main(void) {
 
     // Read entries into array
     while ((entry = readdir(dir)) != NULL) {
-        if (entry->d_name[0] != '.') {
-            filenames[count] = strdup(entry->d_name);  // Duplicate and store the name
+        if (entry->d_name[0] != '.') {  // Skip hidden files
+            filenames[count] = malloc(strlen(entry->d_name) + 1);  // Allocate memory for the name
             if (filenames[count] == NULL) {
-                perror("strdup");
+                perror("malloc");
                 closedir(dir);
                 return 1;
             }
+            strcpy(filenames[count], entry->d_name);  // Copy the name
             count++;
         }
     }
     closedir(dir);
 
     // Sort filenames
-    qsort(filenames, count, sizeof(char *), compare);
+    sort(filenames, count);
 
     // Print sorted list
     for (i = 0; i < count; i++) {
