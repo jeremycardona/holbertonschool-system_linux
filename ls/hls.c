@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/types.h>
-#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -12,6 +11,15 @@ int custom_strcmp(const char *a, const char *b) {
         b++;
     }
     return *(unsigned char *)a - *(unsigned char *)b;
+}
+
+// Custom function to calculate the length of a string (replace strlen)
+size_t custom_strlen(const char *str) {
+    size_t length = 0;
+    while (str[length] != '\0') {
+        length++;
+    }
+    return length;
 }
 
 // Bubble sort comparison function (case-sensitive)
@@ -43,7 +51,7 @@ int main(void) {
     while ((read = readdir(dir))) {
         if (read->d_name[0] != '.') {
             // Allocate memory for file name and copy
-            filenames[count] = malloc(strlen(read->d_name) + 1);
+            filenames[count] = malloc(custom_strlen(read->d_name) + 1); // Using custom_strlen
             if (!filenames[count]) {
                 perror("malloc");
                 closedir(dir);
