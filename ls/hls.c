@@ -5,11 +5,20 @@
 #include <stdlib.h>
 #include <errno.h>
 
+// Custom function to compare two strings lexicographically (case-sensitive)
+int custom_strcmp(const char *a, const char *b) {
+    while (*a && (*a == *b)) {
+        a++;
+        b++;
+    }
+    return *(unsigned char *)a - *(unsigned char *)b;
+}
+
 // Bubble sort comparison function (case-sensitive)
 void bubbleSort(char *arr[], int n) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            if (strcmp(arr[j], arr[j + 1]) > 0) {
+            if (custom_strcmp(arr[j], arr[j + 1]) > 0) {
                 // Swap the elements
                 char *temp = arr[j];
                 arr[j] = arr[j + 1];
