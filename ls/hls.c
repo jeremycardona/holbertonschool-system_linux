@@ -22,6 +22,13 @@ size_t custom_strlen(const char *str) {
     return length;
 }
 
+// Custom function to copy one string to another (replace strcpy)
+char *custom_strcpy(char *dest, const char *src) {
+    char *d = dest;
+    while ((*d++ = *src++));  // Copy each character including the null terminator
+    return dest;
+}
+
 // Bubble sort comparison function (case-sensitive)
 void bubbleSort(char *arr[], int n) {
     for (int i = 0; i < n - 1; i++) {
@@ -57,7 +64,7 @@ int main(void) {
                 closedir(dir);
                 exit(EXIT_FAILURE);
             }
-            strcpy(filenames[count], read->d_name);
+            custom_strcpy(filenames[count], read->d_name);  // Using custom_strcpy
             count++;
         }
     }
