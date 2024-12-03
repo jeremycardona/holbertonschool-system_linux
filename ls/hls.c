@@ -11,5 +11,6 @@ int main(void){
         printf("%s\n", read->d_name);
     }
 
+    closedir(dir);
     return 0;
 }
