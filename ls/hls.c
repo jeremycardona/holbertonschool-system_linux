@@ -15,7 +15,9 @@ int main(void){
 
     while ((read = readdir(dir))){
         // Print file name
-        printf("%s\n", read->d_name);
+        if (read->d_name[0] != '.'){
+            printf("%s\n", read->d_name);
+        }
     }
 
     closedir(dir);
