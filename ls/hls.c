@@ -5,9 +5,18 @@
 #include <stdlib.h>
 #include <errno.h>
 
-// Comparison function for qsort (case-sensitive)
-int compare(const void *a, const void *b) {
-    return strcmp(*(const char **)a, *(const char **)b);
+// Bubble sort comparison function (case-sensitive)
+void bubbleSort(char *arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (strcmp(arr[j], arr[j + 1]) > 0) {
+                // Swap the elements
+                char *temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
 }
 
 int main(void) {
@@ -37,8 +46,8 @@ int main(void) {
     }
     closedir(dir);
 
-    // Sort the file names
-    qsort(filenames, count, sizeof(char *), compare);
+    // Sort the file names using bubble sort
+    bubbleSort(filenames, count);
 
     // Print sorted file names
     for (int i = 0; i < count; i++) {
