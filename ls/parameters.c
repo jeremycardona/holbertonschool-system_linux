@@ -56,8 +56,8 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
     {
         fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
     }
+    perror(prog_name);
 }
-
 /**
  * print_directory_contents - Prints the directory contents.
  * @dir_name: The name of the directory.
@@ -93,14 +93,13 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
         printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
-
 /**
- * process_directory - Processes a directory.
- * @dir_name: The name of the directory.
+ * process_directory - Processes a directory and lists its contents.
+ * @dir_name: The directory name.
  * @options: Options bitmask.
  * @is_multiple_dirs: Flag indicating if multiple directories are being processed.
  *
- * Return: 0 on success, -1 on failure.
+ * Return: 0 if success, -1 if error.
  */
 int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 {
@@ -108,7 +107,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     if (lstat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_04", dir_name, 0);
+        perror("./hls_04");
         return (-1);
     }
 
@@ -118,7 +117,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_04", dir_name, 1);
+            perror("opendir");
             return (-1);
         }
 
@@ -168,77 +167,42 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     return (0);
 }
-
 /**
  * process_arguments - Processes the command line arguments.
- * @argc: Argument count.
- * @argv: Argument vector.
+ * @argc: The number of arguments.
+ * @argv: The array of arguments.
  * @options: Options bitmask.
  *
- * Return: 0 on success, EXIT_FAILURE on failure.
+ * Return: 0 if success, EXIT_FAILURE if no directories found.
  */
 int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
     int is_multiple_dirs = 0;
     int dir_count = 0;
-    int file_count = 0;
 
-    // Count the number of directories and files
+    // Count the number of directories/files
     for (int i = 0; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            struct stat statbuf;
-            if (lstat(argv[i], &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
-            {
-                dir_count++;
-            }
-            else
-            {
-                file_count++;
-            }
+            dir_count++;
         }
     }
 
     is_multiple_dirs = (dir_count > 1);
 
-    // Print files first
     for (int i = 0; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            struct stat statbuf;
-            if (lstat(argv[i], &statbuf) == 0 && !S_ISDIR(statbuf.st_mode))
+            if (process_directory(argv[i], options, is_multiple_dirs) == -1)
             {
-                if (process_directory(argv[i], options, 0) == -1)
-                {
-                    no_dir_found = 1;
-                }
+                no_dir_found = 1;
             }
-        }
-    }
-
-    // Print directories after files
-    for (int i = 0; i < argc; i++)
-    {
-        if (argv[i][0] != '-')
-        {
-            struct stat statbuf;
-            if (lstat(argv[i], &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
+            if (is_multiple_dirs && i < argc - 1)
             {
-                if (is_multiple_dirs)
-                {
-                    printf("%s:\n", argv[i]);
-                }
-                if (process_directory(argv[i], options, is_multiple_dirs) == -1)
-                {
-                    no_dir_found = 1;
-                }
-                if (is_multiple_dirs && i < argc - 1)
-                {
-                    printf("\n");
-                }
+                printf("\n");
             }
         }
     }
