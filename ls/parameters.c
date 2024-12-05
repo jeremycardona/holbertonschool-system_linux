@@ -39,10 +39,22 @@ const char *strerror_custom(int errnum)
  * print_error - Prints an error message.
  * @prog_name: The name of the program.
  * @dir: The directory or file causing the error.
+ * @is_permission_error: Flag indicating if the error is a permission issue.
  */
-void print_error(const char *prog_name, const char *dir)
+void print_error(const char *prog_name, const char *dir, int is_permission_error)
 {
-    fprintf(stderr, "%s: cannot open directory %s: %s\n", prog_name, dir, strerror_custom(errno));
+    if (errno == ENOENT)
+    {
+        fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
+    }
+    else if (is_permission_error)
+    {
+        fprintf(stderr, "%s: cannot open directory %s: %s\n", prog_name, dir, strerror_custom(errno));
+    }
+    else
+    {
+        fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
+    }
 }
 
 /**
@@ -85,7 +97,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
     if (stat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_01", dir_name);
+        print_error("./hls_01", dir_name, 0);
         return (-1);
     }
 
@@ -95,7 +107,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_01", dir_name);
+            print_error("./hls_01", dir_name, 1);
             return (-1);
         }
 
