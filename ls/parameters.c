@@ -128,6 +128,12 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         while ((entry = readdir(dir)) != NULL)
         {
+            // Skip hidden files
+            if (entry->d_name[0] == '.')
+            {
+                continue;
+            }
+
             if (count >= capacity)
             {
                 capacity *= 2;
