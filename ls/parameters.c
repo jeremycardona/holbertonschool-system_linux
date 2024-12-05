@@ -52,8 +52,7 @@ void print_error(const char *prog_name, const char *dir)
  * @filenames: List of filenames in the directory.
  * @count: The number of filenames.
  */
-void print_directory_contents(const char *dir_name,
-	char **filenames, size_t count)
+void print_directory_contents(char **filenames, size_t count)
 {
 	for (size_t j = 0; j < count; j++)
 	{
@@ -91,7 +90,7 @@ int process_directory(const char *dir_name)
 	closedir(dir);
 
 	sort_filenames(filenames, count);
-	print_directory_contents(dir_name, filenames, count);
+	print_directory_contents(filenames, count);
 
 	return (0);
 }
