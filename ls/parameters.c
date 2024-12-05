@@ -180,29 +180,59 @@ int process_arguments(int argc, char *argv[], int options)
     int no_dir_found = 0;
     int is_multiple_dirs = 0;
     int dir_count = 0;
+    int file_count = 0;
 
-    // Count the number of directories/files
+    // Count the number of directories and files
     for (int i = 0; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            dir_count++;
+            struct stat statbuf;
+            if (stat(argv[i], &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
+            {
+                dir_count++;
+            }
+            else
+            {
+                file_count++;
+            }
         }
     }
 
     is_multiple_dirs = (dir_count > 1);
 
+    // Print files first
     for (int i = 0; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            if (process_directory(argv[i], options, is_multiple_dirs) == -1)
+            struct stat statbuf;
+            if (stat(argv[i], &statbuf) == 0 && !S_ISDIR(statbuf.st_mode))
             {
-                no_dir_found = 1;
+                if (process_directory(argv[i], options, is_multiple_dirs) == -1)
+                {
+                    no_dir_found = 1;
+                }
             }
-            if (is_multiple_dirs && i < argc - 1)
+        }
+    }
+
+    // Print directories after files
+    for (int i = 0; i < argc; i++)
+    {
+        if (argv[i][0] != '-')
+        {
+            struct stat statbuf;
+            if (stat(argv[i], &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
             {
-                printf("\n");
+                if (process_directory(argv[i], options, is_multiple_dirs) == -1)
+                {
+                    no_dir_found = 1;
+                }
+                if (is_multiple_dirs && i < argc - 1)
+                {
+                    printf("\n");
+                }
             }
         }
     }
