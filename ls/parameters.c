@@ -179,7 +179,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     if (lstat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_04", dir_name, 0);
+        print_error("./hls_05", dir_name, 0);
         return (-1);
     }
 
@@ -189,7 +189,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_04", dir_name, 1);
+            print_error("./hls_05", dir_name, 1);
             return (-1);
         }
 
