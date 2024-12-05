@@ -13,33 +13,33 @@
  *
  * Return: 0 if successful, otherwise exit with failure.
  */
-int read_directory(DIR *dir, char ***filenames, size_t *count, 
-    size_t *capacity)
+int read_directory(DIR *dir, char ***filenames, size_t *count,
+	size_t *capacity)
 {
-    struct dirent *entry;
+	struct dirent *entry;
 
-    while ((entry = readdir(dir)))
-    {
-        if (entry->d_name[0] != '.')
-        {
-            if (*count == *capacity)
-            {
-                if (resize_filenames(filenames, count, capacity) == -1)
-                    return (-1);
-            }
+	while ((entry = readdir(dir)))
+	{
+		if (entry->d_name[0] != '.')
+		{
+			if (*count == *capacity)
+			{
+				if (resize_filenames(filenames, count, capacity) == -1)
+					return (-1);
+			}
 
-            (*filenames)[*count] = malloc(my_strlen(entry->d_name) + 1);
-            if (!(*filenames)[*count])
-            {
-                perror("malloc");
-                return (-1);
-            }
-            my_strcpy((*filenames)[*count], entry->d_name);
-            (*count)++;
-        }
-    }
+			(*filenames)[*count] = malloc(my_strlen(entry->d_name) + 1);
+			if (!(*filenames)[*count])
+			{
+				perror("malloc");
+				return (-1);
+			}
+			my_strcpy((*filenames)[*count], entry->d_name);
+			(*count)++;
+		}
+	}
 
-    return (0);
+	return (0);
 }
 
 /**
@@ -52,21 +52,21 @@ int read_directory(DIR *dir, char ***filenames, size_t *count,
  */
 int resize_filenames(char ***filenames, size_t *count, size_t *capacity)
 {
-    size_t new_capacity = *capacity * 2;
-    char **new_filenames = malloc(sizeof(char *) * new_capacity);
+	size_t new_capacity = *capacity * 2;
+	char **new_filenames = malloc(sizeof(char *) * new_capacity);
 
-    if (!new_filenames)
-    {
-        perror("malloc");
-        return (-1);
-    }
+	if (!new_filenames)
+	{
+		perror("malloc");
+		return (-1);
+	}
 
-    for (size_t i = 0; i < *count; i++)
-        new_filenames[i] = (*filenames)[i];
+	for (size_t i = 0; i < *count; i++)
+		new_filenames[i] = (*filenames)[i];
 
-    free(*filenames);
-    *filenames = new_filenames;
-    *capacity = new_capacity;
+	free(*filenames);
+	*filenames = new_filenames;
+	*capacity = new_capacity;
 
-    return (0);
+	return (0);
 }
