@@ -42,7 +42,7 @@ const char *strerror_custom(int errnum)
  */
 void print_error(const char *prog_name, const char *dir)
 {
-    fprintf(stderr, "%s: cannot access '%s': %s\n", prog_name, dir, strerror_custom(errno));
+    fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
 }
 
 /**
@@ -80,7 +80,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
     if (stat(dir_name, &statbuf) == -1)
     {
-        print_error("hls", dir_name);
+        print_error("./hls", dir_name);
         return (-1);
     }
 
@@ -90,7 +90,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("hls", dir_name);
+            print_error("./hls", dir_name);
             return (-1);
         }
 
