@@ -122,17 +122,29 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
             return (-1);
         }
 
+        struct dirent *entry;
         char **filenames = malloc(sizeof(char *) * 10);
         size_t count = 0, capacity = 10;
 
-        if (read_directory(dir, &filenames, &count, &capacity) == -1)
+        while ((entry = readdir(dir)) != NULL)
         {
-            closedir(dir);
-            free(filenames);
-            return (-1);
+            if (count >= capacity)
+            {
+                capacity *= 2;
+                filenames = realloc(filenames, sizeof(char *) * capacity);
+            }
+            filenames[count] = my_strdup(entry->d_name);
+            count++;
         }
 
         closedir(dir);
+
+        if (count == 0)
+        {
+            free(filenames);
+            filenames = NULL;
+        }
+
         sort_filenames(filenames, count, options);
         print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
     }
@@ -181,6 +193,10 @@ int process_arguments(int argc, char *argv[], int options)
             if (process_directory(argv[i], options, is_multiple_dirs) == -1)
             {
                 no_dir_found = 1;
+            }
+            if (is_multiple_dirs && i < argc - 1)
+            {
+                printf("\n");
             }
         }
     }

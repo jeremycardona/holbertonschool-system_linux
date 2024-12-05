@@ -74,6 +74,22 @@ int my_strcasecmp(const char *str1, const char *str2)
 }
 
 /**
+ * my_strdup - Custom strdup function.
+ * @str: The input string.
+ * Return: Pointer to the duplicated string.
+ */
+char *my_strdup(const char *str)
+{
+    size_t len = my_strlen(str) + 1;
+    char *copy = malloc(len);
+    if (copy)
+    {
+        my_strcpy(copy, str);
+    }
+    return copy;
+}
+
+/**
  * compare_filenames - Comparison function for filenames.
  * @a: First filename.
  * @b: Second filename.
