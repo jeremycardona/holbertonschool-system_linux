@@ -42,7 +42,7 @@ const char *strerror_custom(int errnum)
  */
 void print_error(const char *prog_name, const char *dir)
 {
-	fprintf(stderr, "./%s: cannot access '%s': %s\n", prog_name, dir,
+	fprintf(stderr, "./%s: cannot access %s: %s\n", prog_name, dir,
 			strerror_custom(errno));
 }
 
