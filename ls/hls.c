@@ -18,18 +18,33 @@ int main(void) {
     }
 
     struct dirent *entry;
-    char **filenames = NULL;
+    char **filenames = malloc(sizeof(char *) * 10);  // Initial allocation for 10 filenames
     size_t count = 0;
+    size_t capacity = 10;
 
     // Read directory entries into an array
     while ((entry = readdir(dir))) {
         if (entry->d_name[0] != '.') {
-            filenames = realloc(filenames, sizeof(char *) * (count + 1));
-            if (!filenames) {
-                perror("realloc");
-                closedir(dir);
-                exit(EXIT_FAILURE);
+            // Check if resizing is needed
+            if (count == capacity) {
+                // Allocate a larger block with double capacity
+                size_t new_capacity = capacity * 2;
+                char **new_filenames = malloc(sizeof(char *) * new_capacity);
+                if (!new_filenames) {
+                    perror("malloc");
+                    closedir(dir);
+                    exit(EXIT_FAILURE);
+                }
+
+                // Copy old data to new block
+                for (size_t i = 0; i < count; i++) {
+                    new_filenames[i] = filenames[i];
+                }
+                free(filenames);
+                filenames = new_filenames;
+                capacity = new_capacity;
             }
+
             filenames[count] = malloc(my_strlen(entry->d_name) + 1);
             if (!filenames[count]) {
                 perror("malloc");
