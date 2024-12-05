@@ -1,72 +1,67 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include "utils.h"
+#include "hls.h"
 
 /**
- * main - List and sort the contents of the current directory.
+ * read_directory - Reads the entries of a directory and stores filenames.
+ * @dir: The directory stream to read from.
+ * @filenames: Pointer to the array to store filenames.
+ * @count: Pointer to the current count of filenames.
+ * @capacity: Pointer to the current capacity of the filenames array.
  *
- * Description: Program that lists the contents of the current
- * directory in alphabetical order.
- * Return: 0 exit.
+ * Return: 0 if successful, otherwise exit with failure.
  */
-int main(void) {
-    DIR *dir = opendir(".");
-    if (!dir) {
-        perror("opendir");
-        exit(EXIT_FAILURE);
-    }
+int read_directory(DIR *dir, char ***filenames, size_t *count,
+	size_t *capacity)
+{
+	struct dirent *entry;
 
-    struct dirent *entry;
-    char **filenames = malloc(sizeof(char *) * 10);  // Initial allocation for 10 filenames
-    size_t count = 0;
-    size_t capacity = 10;
+	while ((entry = readdir(dir)))
+	{
+		if (entry->d_name[0] != '.')
+		{
+			if (*count == *capacity)
+			{
+				if (resize_filenames(filenames, count, capacity) == -1)
+					return (-1);
+			}
 
-    // Read directory entries into an array
-    while ((entry = readdir(dir))) {
-        if (entry->d_name[0] != '.') {
-            // Check if resizing is needed
-            if (count == capacity) {
-                // Allocate a larger block with double capacity
-                size_t new_capacity = capacity * 2;
-                char **new_filenames = malloc(sizeof(char *) * new_capacity);
-                if (!new_filenames) {
-                    perror("malloc");
-                    closedir(dir);
-                    exit(EXIT_FAILURE);
-                }
+			(*filenames)[*count] = malloc(my_strlen(entry->d_name) + 1);
+			if (!(*filenames)[*count])
+			{
+				perror("malloc");
+				return (-1);
+			}
+			my_strcpy((*filenames)[*count], entry->d_name);
+			(*count)++;
+		}
+	}
+	return (0);
+}
 
-                // Copy old data to new block
-                for (size_t i = 0; i < count; i++) {
-                    new_filenames[i] = filenames[i];
-                }
-                free(filenames);
-                filenames = new_filenames;
-                capacity = new_capacity;
-            }
+/**
+ * resize_filenames - Resizes the filenames array when needed.
+ * @filenames: Pointer to the filenames array.
+ * @count: Pointer to the current count of filenames.
+ * @capacity: Pointer to the current capacity of the filenames array.
+ *
+ * Return: 0 if successful, otherwise -1 for failure.
+ */
+int resize_filenames(char ***filenames, size_t *count, size_t *capacity)
+{
+	size_t new_capacity = *capacity * 2;
+	char **new_filenames = malloc(sizeof(char *) * new_capacity);
 
-            filenames[count] = malloc(my_strlen(entry->d_name) + 1);
-            if (!filenames[count]) {
-                perror("malloc");
-                closedir(dir);
-                exit(EXIT_FAILURE);
-            }
-            my_strcpy(filenames[count], entry->d_name);
-            count++;
-        }
-    }
+	if (!new_filenames)
+	{
+		perror("malloc");
+		return (-1);
+	}
 
-    closedir(dir);
+	for (size_t i = 0; i < *count; i++)
+		new_filenames[i] = (*filenames)[i];
 
-    // Sort the filenames array
-    sort_filenames(filenames, count);
+	free(*filenames);
+	*filenames = new_filenames;
+	*capacity = new_capacity;
 
-    // Print sorted filenames
-    for (size_t i = 0; i < count; i++) {
-        printf("%s\n", filenames[i]);
-        free(filenames[i]);
-    }
-
-    free(filenames);
-    return 0;
+	return (0);
 }
