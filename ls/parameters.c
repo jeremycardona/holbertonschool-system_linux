@@ -106,7 +106,17 @@ void print_file_info(const char *dir_name, const char *file_name)
     // Print modification time
     char timebuf[80];
     struct tm *tm_info = localtime(&statbuf.st_mtime);
-    strftime(timebuf, sizeof(timebuf), "%b %d %H:%M", tm_info);
+    time_t current_time = time(NULL);
+    double diff_time = difftime(current_time, statbuf.st_mtime);
+
+    if (diff_time < 6 * 30 * 24 * 60 * 60) // Less than 6 months
+    {
+        strftime(timebuf, sizeof(timebuf), "%b %d %H:%M", tm_info);
+    }
+    else
+    {
+        strftime(timebuf, sizeof(timebuf), "%b %d %Y", tm_info);
+    }
     printf(" %s", timebuf);
 
     // Print file name
