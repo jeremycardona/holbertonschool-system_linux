@@ -151,6 +151,11 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
             filenames = NULL;
         }
 
+        if (is_multiple_dirs)
+        {
+            printf("%s:\n", dir_name);
+        }
+
         sort_filenames(filenames, count, options);
         print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
     }
@@ -166,7 +171,6 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     return (0);
 }
-
 /**
  * process_arguments - Processes the command line arguments.
  * @argc: The number of arguments.
