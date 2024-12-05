@@ -58,6 +58,62 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
     }
 }
 
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
+#include <string.h>
+
+/**
+ * print_file_info - Prints detailed information about a file.
+ * @dir_name: The directory name.
+ * @file_name: The file name.
+ */
+void print_file_info(const char *dir_name, const char *file_name)
+{
+    char path[1024];
+    snprintf(path, sizeof(path), "%s/%s", dir_name, file_name);
+
+    struct stat statbuf;
+    if (lstat(path, &statbuf) == -1)
+    {
+        perror("lstat");
+        return;
+    }
+
+    // Print file type and permissions
+    printf((S_ISDIR(statbuf.st_mode)) ? "d" : "-");
+    printf((statbuf.st_mode & S_IRUSR) ? "r" : "-");
+    printf((statbuf.st_mode & S_IWUSR) ? "w" : "-");
+    printf((statbuf.st_mode & S_IXUSR) ? "x" : "-");
+    printf((statbuf.st_mode & S_IRGRP) ? "r" : "-");
+    printf((statbuf.st_mode & S_IWGRP) ? "w" : "-");
+    printf((statbuf.st_mode & S_IXGRP) ? "x" : "-");
+    printf((statbuf.st_mode & S_IROTH) ? "r" : "-");
+    printf((statbuf.st_mode & S_IWOTH) ? "w" : "-");
+    printf((statbuf.st_mode & S_IXOTH) ? "x" : "-");
+
+    // Print number of links
+    printf(" %lu", statbuf.st_nlink);
+
+    // Print owner and group
+    struct passwd *pw = getpwuid(statbuf.st_uid);
+    struct group *gr = getgrgid(statbuf.st_gid);
+    printf(" %s %s", pw->pw_name, gr->gr_name);
+
+    // Print size
+    printf(" %5ld", statbuf.st_size);
+
+    // Print modification time
+    char timebuf[80];
+    struct tm *tm_info = localtime(&statbuf.st_mtime);
+    strftime(timebuf, sizeof(timebuf), "%b %d %H:%M", tm_info);
+    printf(" %s", timebuf);
+
+    // Print file name
+    printf(" %s\n", file_name);
+}
+
 /**
  * print_directory_contents - Prints the directory contents.
  * @dir_name: The name of the directory.
@@ -75,25 +131,31 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
 
     for (size_t j = 0; j < count; j++)
     {
-        printf("%s", filenames[j]);
-        if (options & OPT_ONE_PER_LINE)
+        if (options & OPT_LONG_FORMAT)
         {
-            printf("\n");
+            print_file_info(dir_name, filenames[j]);
         }
         else
         {
-            printf("  ");
+            printf("%s", filenames[j]);
+            if (options & OPT_ONE_PER_LINE)
+            {
+                printf("\n");
+            }
+            else
+            {
+                printf("  ");
+            }
         }
         free(filenames[j]);
     }
     free(filenames);
 
-    if (!(options & OPT_ONE_PER_LINE))
+    if (!(options & OPT_ONE_PER_LINE) && !(options & OPT_LONG_FORMAT))
     {
         printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
-
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
@@ -168,7 +230,6 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     return (0);
 }
-
 /**
  * process_arguments - Processes the command line arguments.
  * @argc: The number of arguments.
