@@ -25,20 +25,41 @@ char *my_strcpy(char *dest, const char *src) {
     while ((*dest++ = *src++));
     return start;
 }
+/**
+ * my_tolower - Converts a character to lowercase.
+ * @c: The character to convert.
+ * 
+ * Return: The lowercase equivalent if the character is uppercase, 
+ * otherwise returns the character itself.
+ */
+char my_tolower(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c + ('a' - 'A');
+    }
+    return c;
+}
 
 /**
- * my_strcmp - Custom string comparison function.
+ * my_strcmp - Custom string comparison function (case-insensitive).
  * @str1: First string.
  * @str2: Second string.
  * 
  * Return: <0 if str1 < str2, 0 if str1 == str2, >0 if str1 > str2.
  */
 int my_strcmp(const char *str1, const char *str2) {
-    while (*str1 && (*str1 == *str2)) {
+    while (*str1 && *str2) {
+        char c1 = my_tolower(*str1);
+        char c2 = my_tolower(*str2);
+
+        if (c1 != c2) {
+            return c1 - c2;
+        }
+
         str1++;
         str2++;
     }
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
+
+    return my_tolower(*str1) - my_tolower(*str2);
 }
 
 /**
