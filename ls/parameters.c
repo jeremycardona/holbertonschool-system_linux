@@ -65,11 +65,11 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
  * @count: The number of filenames.
  * @options: Options bitmask.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options, int is_multiple_dirs)
 {
-    if (options & OPT_RECURSIVE)
+    if (is_multiple_dirs)
     {
-        printf("%s:\n", dir_name);  /* Print the directory name only if multiple directories are handled */
+        printf("%s:\n", dir_name);
     }
 
     for (size_t j = 0; j < count; j++)
@@ -97,10 +97,11 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
  * @options: Options bitmask.
+ * @is_multiple_dirs: Flag indicating if multiple directories are being processed.
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(const char *dir_name, int options)
+int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 {
     struct stat statbuf;
 
@@ -132,11 +133,15 @@ int process_directory(const char *dir_name, int options)
 
         closedir(dir);
         sort_filenames(filenames, count, options);
-        print_directory_contents(dir_name, filenames, count, options);
+        print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
     }
     else
     {
         /* It's not a directory, it's a file */
+        if (is_multiple_dirs)
+        {
+            printf("%s:\n", dir_name);
+        }
         printf("%s\n", dir_name);
     }
 
@@ -159,7 +164,7 @@ int process_arguments(int argc, char *argv[], int options)
     {
         if (argv[i][0] != '-')
         {
-            if (process_directory(argv[i], options) == -1)
+            if (process_directory(argv[i], options, is_multiple_dirs) == -1)
             {
                 no_dir_found = 1;
             }
