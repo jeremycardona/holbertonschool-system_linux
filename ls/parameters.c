@@ -65,6 +65,11 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
         free(filenames[j]);
     }
     free(filenames);
+
+    if (is_multiple_dirs)
+    {
+        printf("\n");  /* Print a newline after each directory's contents when handling multiple directories */
+    }
 }
 
 /**
