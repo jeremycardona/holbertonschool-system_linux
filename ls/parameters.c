@@ -68,11 +68,6 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
  */
 void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options, int is_multiple_dirs)
 {
-    if (is_multiple_dirs)
-    {
-        printf("%s:\n", dir_name);
-    }
-
     for (size_t j = 0; j < count; j++)
     {
         printf("%s", filenames[j]);
@@ -93,7 +88,6 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
         printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
-
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
@@ -149,11 +143,6 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
         {
             free(filenames);
             filenames = NULL;
-        }
-
-        if (is_multiple_dirs)
-        {
-            printf("%s:\n", dir_name);
         }
 
         sort_filenames(filenames, count, options);
