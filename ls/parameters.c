@@ -5,6 +5,7 @@
 #include <errno.h>
 #include "hls.h"
 #include "utils.h"
+#include "options.h"
 
 /**
  * strerror_custom - Custom strerror function to handle errors.
@@ -62,36 +63,44 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
  * @dir_name: The name of the directory.
  * @filenames: Array of filenames.
  * @count: The number of filenames.
- * @is_multiple_dirs: Flag to indicate if multiple directories are being processed.
+ * @options: Options bitmask.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count, int is_multiple_dirs)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options)
 {
-    if (is_multiple_dirs)
+    if (options & OPT_RECURSIVE)
     {
         printf("%s:\n", dir_name);  /* Print the directory name only if multiple directories are handled */
     }
 
     for (size_t j = 0; j < count; j++)
     {
-        printf("%s\n", filenames[j]);
+        printf("%s", filenames[j]);
+        if (options & OPT_ONE_PER_LINE)
+        {
+            printf("\n");
+        }
+        else
+        {
+            printf("  ");
+        }
         free(filenames[j]);
     }
     free(filenames);
 
-    if (is_multiple_dirs)
+    if (options & OPT_RECURSIVE || options & OPT_ONE_PER_LINE)
     {
-        printf("\n");  /* Print a newline after each directory's contents when handling multiple directories */
+        printf("\n");  /* Print a newline after each directory's contents when handling multiple directories or showing one per line */
     }
 }
 
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
- * @is_multiple_dirs: Flag to indicate if multiple directories are being processed.
+ * @options: Options bitmask.
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(const char *dir_name, int is_multiple_dirs)
+int process_directory(const char *dir_name, int options)
 {
     struct stat statbuf;
 
@@ -122,8 +131,8 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
         }
 
         closedir(dir);
-        sort_filenames(filenames, count);
-        print_directory_contents(dir_name, filenames, count, is_multiple_dirs);
+        sort_filenames(filenames, count, options);
+        print_directory_contents(dir_name, filenames, count, options);
     }
     else
     {
@@ -138,17 +147,17 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
  * process_arguments - Processes the command line arguments.
  * @argc: The number of arguments.
  * @argv: The array of arguments.
+ * @options: Options bitmask.
  *
  * Return: 0 if success, EXIT_FAILURE if no directories found.
  */
-int process_arguments(int argc, char *argv[])
+int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
-    int is_multiple_dirs = (argc > 2);
 
-    for (int i = 1; i < argc; i++)
+    for (int i = 0; i < argc; i++)
     {
-        if (process_directory(argv[i], is_multiple_dirs) == -1)
+        if (process_directory(argv[i], options) == -1)
         {
             no_dir_found = 1;
         }

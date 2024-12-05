@@ -1,4 +1,11 @@
 #include "utils.h"
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+#include "options.h"
+
+static int options_global;
 
 /**
  * my_strlen - Custom string length function.
@@ -7,92 +14,143 @@
  */
 size_t my_strlen(const char *str)
 {
-	size_t length = 0;
+    size_t length = 0;
 
-	while (str[length])
-	{
-		length++;
-	}
+    while (str[length])
+    {
+        length++;
+    }
 
-	return (length);
+    return (length);
 }
 
 /**
  * my_strcpy - Custom string copy function.
  * @dest: Destination buffer.
  * @src: Source string.
- * Return: Pointer to the destination string.
+ * Return: Pointer to the destination buffer.
  */
 char *my_strcpy(char *dest, const char *src)
 {
-	char *start = dest;
+    char *ptr = dest;
 
-	while ((*dest++ = *src++))
-		;
+    while (*src)
+    {
+        *ptr++ = *src++;
+    }
+    *ptr = '\0';
 
-	return (start);
+    return (dest);
 }
 
 /**
- * my_tolower - Converts a character to lowercase.
- * @c: The character to convert.
- * Return: The lowercase equivalent if the character is uppercase,
- * otherwise returns the character itself.
+ * my_tolower - Custom tolower function.
+ * @c: The input character.
+ * Return: Lowercase character.
  */
 char my_tolower(char c)
 {
-	if (c >= 'A' && c <= 'Z')
-	{
-		return (c + ('a' - 'A'));
-	}
-	return (c);
+    if (c >= 'A' && c <= 'Z')
+    {
+        return (c + 32);
+    }
+    return (c);
 }
 
 /**
- * my_strcmp - Custom string comparison function (case-insensitive).
+ * my_strcasecmp - Custom case-insensitive string compare function.
  * @str1: First string.
  * @str2: Second string.
- * Return: <0 if str1 < str2, 0 if str1 == str2, >0 if str1 > str2.
+ * Return: Comparison result.
  */
-int my_strcmp(const char *str1, const char *str2)
+int my_strcasecmp(const char *str1, const char *str2)
 {
-	while (*str1 && *str2)
-	{
-		char c1 = my_tolower(*str1);
-		char c2 = my_tolower(*str2);
-
-		if (c1 != c2)
-		{
-			return (c1 - c2);
-		}
-
-		str1++;
-		str2++;
-	}
-
-	return (my_tolower(*str1) - my_tolower(*str2));
+    while (*str1 && (my_tolower(*str1) == my_tolower(*str2)))
+    {
+        str1++;
+        str2++;
+    }
+    return (my_tolower(*(unsigned char *)str1) - my_tolower(*(unsigned char *)str2));
 }
 
 /**
- * sort_filenames - Sorts an array of filenames in alphabetical order.
- * @filenames: Array of filenames.
- * @count: Number of filenames in the array.
+ * compare_filenames - Comparison function for filenames.
+ * @a: First filename.
+ * @b: Second filename.
+ * Return: Comparison result.
  */
-void sort_filenames(char **filenames, size_t count)
+int compare_filenames(const void *a, const void *b)
 {
-	size_t i, j;
+    const char **filename1 = (const char **)a;
+    const char **filename2 = (const char **)b;
 
-	for (i = 0; i < count - 1; i++)
-	{
-		for (j = i + 1; j < count; j++)
-		{
-			if (my_strcmp(filenames[i], filenames[j]) > 0)
-			{
-				char *temp = filenames[i];
+    if (options_global & OPT_SORT_SIZE)
+    {
+        struct stat stat1, stat2;
+        stat(*filename1, &stat1);
+        stat(*filename2, &stat2);
+        return (stat2.st_size - stat1.st_size);
+    }
+    else if (options_global & OPT_SORT_TIME)
+    {
+        struct stat stat1, stat2;
+        stat(*filename1, &stat1);
+        stat(*filename2, &stat2);
+        return (stat2.st_mtime - stat1.st_mtime);
+    }
+    else
+    {
+        return my_strcasecmp(*filename1, *filename2);
+    }
+}
 
-				filenames[i] = filenames[j];
-				filenames[j] = temp;
-			}
-		}
-	}
+/**
+ * swap - Swaps two elements in an array.
+ * @a: First element.
+ * @b: Second element.
+ */
+void swap(char **a, char **b)
+{
+    char *temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+/**
+ * bubble_sort - Sorts an array using bubble sort.
+ * @array: Array to sort.
+ * @size: Size of the array.
+ */
+void bubble_sort(char **array, size_t size)
+{
+    for (size_t i = 0; i < size - 1; i++)
+    {
+        for (size_t j = 0; j < size - i - 1; j++)
+        {
+            if (compare_filenames(&array[j], &array[j + 1]) > 0)
+            {
+                swap(&array[j], &array[j + 1]);
+            }
+        }
+    }
+}
+
+/**
+ * sort_filenames - Sorts the filenames array.
+ * @filenames: Array of filenames.
+ * @count: The number of filenames.
+ * @options: Options bitmask.
+ */
+void sort_filenames(char **filenames, size_t count, int options)
+{
+    options_global = options;
+    bubble_sort(filenames, count);
+
+    if (options & OPT_REVERSE)
+    {
+        for (size_t i = 0; i < count / 2; i++)
+        {
+            swap(&filenames[i], &filenames[count - i - 1]);
+        }
+    }
 }
