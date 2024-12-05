@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 #include "hls.h"
 #include "utils.h"
 #include "options.h"
@@ -58,11 +62,6 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
     }
 }
 
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
-#include <string.h>
 
 /**
  * print_file_info - Prints detailed information about a file.
