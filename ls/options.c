@@ -14,6 +14,7 @@
 int parse_options(int argc, char *argv[], int *options)
 {
     int i, j;
+    int first_non_option_index = -1;
 
     for (i = 1; i < argc; i++)
     {
@@ -55,9 +56,12 @@ int parse_options(int argc, char *argv[], int *options)
         }
         else
         {
-            break;
+            if (first_non_option_index == -1)
+            {
+                first_non_option_index = i;
+            }
         }
     }
 
-    return i;
+    return (first_non_option_index == -1) ? argc : first_non_option_index;
 }

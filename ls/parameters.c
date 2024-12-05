@@ -87,9 +87,9 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
     }
     free(filenames);
 
-    if (options & OPT_RECURSIVE || options & OPT_ONE_PER_LINE)
+    if (!(options & OPT_ONE_PER_LINE))
     {
-        printf("\n");  /* Print a newline after each directory's contents when handling multiple directories or showing one per line */
+        printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
 
@@ -154,12 +154,16 @@ int process_directory(const char *dir_name, int options)
 int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
+    int is_multiple_dirs = (argc > 1);
 
     for (int i = 0; i < argc; i++)
     {
-        if (process_directory(argv[i], options) == -1)
+        if (argv[i][0] != '-')
         {
-            no_dir_found = 1;
+            if (process_directory(argv[i], options) == -1)
+            {
+                no_dir_found = 1;
+            }
         }
     }
 
