@@ -10,7 +10,8 @@
 #include "hls.h"
 
 void print_error(const char *prog_name, const char *dir);
-void print_directory_contents(char **filenames, size_t count);
+void print_directory_contents(const char *dir_name, char **filenames,
+	size_t count, int multiple_dirs);
 int process_directory(const char *dir_name);
 int process_arguments(int argc, char *argv[]);
 

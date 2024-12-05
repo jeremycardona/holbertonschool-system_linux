@@ -51,10 +51,14 @@ void print_error(const char *prog_name, const char *dir)
  * @dir_name: The name of the directory.
  * @filenames: Array of filenames.
  * @count: The number of filenames.
+ * @multiple_dirs: Flag indicating if multiple directories are being processed.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int multiple_dirs)
 {
-    printf("%s:\n", dir_name);  // Print the directory name
+    if (multiple_dirs)
+    {
+        printf("%s:\n", dir_name);  /* print the directory name */
+    }
 
     for (size_t j = 0; j < count; j++)
     {
@@ -102,7 +106,7 @@ int process_directory(const char *dir_name)
 
         closedir(dir);
         sort_filenames(filenames, count);
-        print_directory_contents(dir_name, filenames, count);  // Pass the directory name
+        print_directory_contents(dir_name, filenames, count, 1);  // Pass the directory name
     }
     else
     {

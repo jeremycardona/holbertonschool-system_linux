@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
+#include <string.h>
 #include "utils.h"
 #include "hls.h"
 #include "parameters.h"
@@ -17,18 +18,39 @@
  */
 int main(int argc, char *argv[])
 {
-	if (argc < 2)
-	{
-		fprintf(stderr, "%s: missing operand\n", argv[0]);
-		exit(EXIT_FAILURE);
-	}
+    if (argc < 2)
+    {
+        fprintf(stderr, "%s: missing operand\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
-	int result = process_arguments(argc, argv);
+    int multiple_dirs = (argc > 2);
 
-	if (result == EXIT_FAILURE)
-	{
-		exit(EXIT_FAILURE);
-	}
+    for (int i = 1; i < argc; i++)
+    {
+        DIR *dir = opendir(argv[i]);
+        if (!dir)
+        {
+            fprintf(stderr, "%s: cannot access '%s': %s\n", argv[0], argv[i], strerror(errno));
+            continue;
+        }
 
-	return (0);
+        char **filenames = malloc(sizeof(char *) * 10);
+        size_t count = 0, capacity = 10;
+
+        if (read_directory(dir, &filenames, &count, &capacity) == -1)
+        {
+            closedir(dir);
+            free(filenames);
+            exit(EXIT_FAILURE);
+        }
+
+        closedir(dir);
+
+        sort_filenames(filenames, count);
+
+        print_directory_contents(argv[i], filenames, count, multiple_dirs);
+    }
+
+    return (0);
 }
