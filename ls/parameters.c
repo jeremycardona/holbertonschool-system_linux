@@ -80,7 +80,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
     if (stat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls", dir_name);
+        print_error("./hls_01", dir_name);
         return (-1);
     }
 
@@ -90,7 +90,7 @@ int process_directory(const char *dir_name, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls", dir_name);
+            print_error("./hls_01", dir_name);
             return (-1);
         }
 
