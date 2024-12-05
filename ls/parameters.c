@@ -108,7 +108,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     if (stat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_02", dir_name, 0);
+        print_error("./hls_03", dir_name, 0);
         return (-1);
     }
 
@@ -118,7 +118,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_02", dir_name, 1);
+            print_error("./hls_03", dir_name, 1);
             return (-1);
         }
 
@@ -128,8 +128,8 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         while ((entry = readdir(dir)) != NULL)
         {
-            // Skip hidden files
-            if (entry->d_name[0] == '.')
+            // Skip hidden files unless -a option is specified
+            if (!(options & OPT_ALL) && entry->d_name[0] == '.')
             {
                 continue;
             }
@@ -157,16 +157,11 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
     else
     {
         /* It's not a directory, it's a file */
-        if (is_multiple_dirs)
-        {
-            printf("%s:\n", dir_name);
-        }
         printf("%s\n", dir_name);
     }
 
     return (0);
 }
-
 /**
  * process_arguments - Processes the command line arguments.
  * @argc: The number of arguments.
