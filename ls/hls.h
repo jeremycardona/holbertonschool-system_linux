@@ -8,4 +8,5 @@
 int read_directory(DIR *, char ***filenames, size_t *count, size_t *capacity);
 int resize_filenames(char ***filenames, size_t *count, size_t *capacity);
 
+
 #endif

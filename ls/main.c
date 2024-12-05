@@ -1,44 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <errno.h>
 #include "utils.h"
 #include "hls.h"
+#include "parameters.h"
 
 /**
- * main - List and sort the contents of the current directory.
+ * main - List and sort the contents of the given directories or files.
+ * @argc: Argument count.
+ * @argv: Argument vector.
  *
- * Description: Program that lists the contents of the current
- * directory in alphabetical order.
+ * Description: Program that lists the contents of the given directories
+ * or files in alphabetical order.
  * Return: Always 0.
  */
-int main(void)
+int main(int argc, char *argv[])
 {
-	DIR *dir = opendir(".");
-	char **filenames = malloc(sizeof(char *) * 10);
-	size_t count = 0, capacity = 10;
-
-	if (!dir)
+	if (argc < 2)
 	{
-		perror("opendir");
+		fprintf(stderr, "%s: missing operand\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	if (read_directory(dir, &filenames, &count, &capacity) == -1)
+	int result = process_arguments(argc, argv);
+
+	if (result == EXIT_FAILURE)
 	{
-		closedir(dir);
 		exit(EXIT_FAILURE);
 	}
 
-	closedir(dir);
-
-	sort_filenames(filenames, count);
-
-	for (size_t i = 0; i < count; i++)
-	{
-		printf("%s\n", filenames[i]);
-		free(filenames[i]);
-	}
-
-	free(filenames);
 	return (0);
 }

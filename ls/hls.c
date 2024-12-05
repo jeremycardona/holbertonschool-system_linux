@@ -4,6 +4,7 @@
 #include "hls.h"
 #include "utils.h"
 
+
 /**
  * read_directory - Reads the entries of a directory and stores filenames.
  * @dir: The directory stream to read from.
