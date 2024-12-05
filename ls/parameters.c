@@ -55,7 +55,6 @@ void print_error(const char *prog_name, const char *dir)
 void print_directory_contents(const char *dir_name,
 	char **filenames, size_t count)
 {
-	printf("%s:\n", dir_name);
 	for (size_t j = 0; j < count; j++)
 	{
 		printf("%s\n", filenames[j]);
