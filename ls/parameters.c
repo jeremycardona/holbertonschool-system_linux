@@ -56,8 +56,8 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
     {
         fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
     }
-    perror(prog_name);
 }
+
 /**
  * print_directory_contents - Prints the directory contents.
  * @dir_name: The name of the directory.
@@ -93,6 +93,7 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
         printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
+
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
@@ -107,7 +108,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     if (lstat(dir_name, &statbuf) == -1)
     {
-        perror("./hls_04");
+        print_error("./hls_04", dir_name, 0);
         return (-1);
     }
 
@@ -117,7 +118,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            perror("opendir");
+            print_error("./hls_04", dir_name, 1);
             return (-1);
         }
 
@@ -167,6 +168,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
     return (0);
 }
+
 /**
  * process_arguments - Processes the command line arguments.
  * @argc: The number of arguments.
