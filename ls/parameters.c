@@ -154,7 +154,6 @@ int process_directory(const char *dir_name, int options)
 int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
-    int is_multiple_dirs = (argc > 1);
 
     for (int i = 0; i < argc; i++)
     {
