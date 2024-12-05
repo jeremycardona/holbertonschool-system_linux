@@ -151,16 +151,17 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
             filenames = NULL;
         }
 
+        if (is_multiple_dirs)
+        {
+            printf("%s:\n", dir_name);
+        }
+
         sort_filenames(filenames, count, options);
         print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
     }
     else
     {
         /* It's not a directory, it's a file */
-        if (is_multiple_dirs)
-        {
-            printf("%s:\n", dir_name);
-        }
         printf("%s\n", dir_name);
     }
 
