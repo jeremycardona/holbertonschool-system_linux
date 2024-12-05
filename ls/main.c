@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
-#include <string.h>
 #include "utils.h"
 #include "hls.h"
 #include "parameters.h"
@@ -31,7 +30,7 @@ int main(int argc, char *argv[])
         DIR *dir = opendir(argv[i]);
         if (!dir)
         {
-            fprintf(stderr, "%s: cannot access '%s': %s\n", argv[0], argv[i], strerror(errno));
+            print_error(argv[0], argv[i]);
             continue;
         }
 
