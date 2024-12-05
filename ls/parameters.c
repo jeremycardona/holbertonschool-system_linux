@@ -2,10 +2,37 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 #include <dirent.h>
 #include "utils.h"
 #include "hls.h"
+
+/**
+ * strerror_custom - Custom function to convert errno to a string message.
+ * @errnum: The error number.
+ * Return: A string with the corresponding error message.
+ */
+const char *strerror_custom(int errnum)
+{
+	switch (errnum)
+	{
+	case EACCES:
+		return ("Permission denied");
+	case ENOENT:
+		return ("No such file or directory");
+	case ENOTDIR:
+		return ("Not a directory");
+	case EISDIR:
+		return ("Is a directory");
+	case ENOMEM:
+		return ("Out of memory");
+	case EEXIST:
+		return ("File exists");
+	case ENAMETOOLONG:
+		return ("File name too long");
+	default:
+		return ("Unknown error");
+	}
+}
 
 /**
  * print_error - Prints error message when directory cannot be accessed.
@@ -16,7 +43,7 @@ void print_error(const char *prog_name, const char *dir)
 {
 	/* Ensure both prog_name and dir are strings */
 	fprintf(stderr, "%s: cannot access '%s': %s\n",
-		prog_name, dir, strerror(errno));
+		prog_name, dir, strerror_custom(errno));
 }
 
 /**
