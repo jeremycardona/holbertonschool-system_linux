@@ -178,47 +178,34 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
-    int is_multiple_dirs = (argc > 2); // Consider multiple if more than one target
-    char **files = malloc(sizeof(char *) * argc);
-    char **dirs = malloc(sizeof(char *) * argc);
-    int file_count = 0, dir_count = 0;
+    int is_multiple_dirs = 0;
+    int dir_count = 0;
 
-    for (int i = 1; i < argc; i++) // Skip program name (argv[0])
+    // Count the number of directories/files
+    for (int i = 0; i < argc; i++)
     {
-        struct stat statbuf;
-        if (stat(argv[i], &statbuf) == -1)
+        if (argv[i][0] != '-')
         {
-            print_error("./hls_02", argv[i], 0);
-            no_dir_found = 1;
-            continue;
-        }
-
-        if (S_ISDIR(statbuf.st_mode))
-        {
-            dirs[dir_count++] = argv[i];
-        }
-        else
-        {
-            files[file_count++] = argv[i];
+            dir_count++;
         }
     }
 
-    // Print files first
-    for (int i = 0; i < file_count; i++)
+    is_multiple_dirs = (dir_count > 1);
+
+    for (int i = 0; i < argc; i++)
     {
-        printf("%s\n", files[i]);
+        if (argv[i][0] != '-')
+        {
+            if (process_directory(argv[i], options, is_multiple_dirs) == -1)
+            {
+                no_dir_found = 1;
+            }
+            if (is_multiple_dirs && i < argc - 1)
+            {
+                printf("\n");
+            }
+        }
     }
 
-    // Print directories
-    for (int i = 0; i < dir_count; i++)
-    {
-        if (is_multiple_dirs)
-            printf("\n%s:\n", dirs[i]);
-
-        process_directory(dirs[i], options, is_multiple_dirs);
-    }
-
-    free(files);
-    free(dirs);
     return (no_dir_found ? EXIT_FAILURE : 0);
 }
