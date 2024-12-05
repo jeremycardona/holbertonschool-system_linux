@@ -23,32 +23,11 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    int multiple_dirs = (argc > 2);
+    int result = process_arguments(argc, argv);
 
-    for (int i = 1; i < argc; i++)
+    if (result == EXIT_FAILURE)
     {
-        DIR *dir = opendir(argv[i]);
-        if (!dir)
-        {
-            print_error(argv[0], argv[i]);
-            continue;
-        }
-
-        char **filenames = malloc(sizeof(char *) * 10);
-        size_t count = 0, capacity = 10;
-
-        if (read_directory(dir, &filenames, &count, &capacity) == -1)
-        {
-            closedir(dir);
-            free(filenames);
-            exit(EXIT_FAILURE);
-        }
-
-        closedir(dir);
-
-        sort_filenames(filenames, count);
-
-        print_directory_contents(argv[i], filenames, count, multiple_dirs);
+        exit(EXIT_FAILURE);
     }
 
     return (0);

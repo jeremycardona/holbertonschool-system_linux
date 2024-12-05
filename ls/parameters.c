@@ -42,8 +42,7 @@ const char *strerror_custom(int errnum)
  */
 void print_error(const char *prog_name, const char *dir)
 {
-    fprintf(stderr, "./%s: cannot access %s: %s\n", prog_name, dir,
-            strerror_custom(errno));
+    fprintf(stderr, "%s: cannot access '%s': %s\n", prog_name, dir, strerror_custom(errno));
 }
 
 /**
@@ -51,13 +50,13 @@ void print_error(const char *prog_name, const char *dir)
  * @dir_name: The name of the directory.
  * @filenames: Array of filenames.
  * @count: The number of filenames.
- * @multiple_dirs: Flag indicating if multiple directories are being processed.
+ * @is_multiple_dirs: Flag to indicate if multiple directories are being processed.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count, int multiple_dirs)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int is_multiple_dirs)
 {
-    if (multiple_dirs)
+    if (is_multiple_dirs)
     {
-        printf("%s:\n", dir_name);  /* print the directory name */
+        printf("%s:\n", dir_name);  /* Print the directory name only if multiple directories are handled */
     }
 
     for (size_t j = 0; j < count; j++)
@@ -71,16 +70,17 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
+ * @is_multiple_dirs: Flag to indicate if multiple directories are being processed.
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(const char *dir_name)
+int process_directory(const char *dir_name, int is_multiple_dirs)
 {
     struct stat statbuf;
 
     if (stat(dir_name, &statbuf) == -1)
     {
-        print_error("hls_01", dir_name);
+        print_error("hls", dir_name);
         return (-1);
     }
 
@@ -90,7 +90,7 @@ int process_directory(const char *dir_name)
 
         if (!dir)
         {
-            print_error("hls_01", dir_name);
+            print_error("hls", dir_name);
             return (-1);
         }
 
@@ -106,7 +106,7 @@ int process_directory(const char *dir_name)
 
         closedir(dir);
         sort_filenames(filenames, count);
-        print_directory_contents(dir_name, filenames, count, 1);  // Pass the directory name
+        print_directory_contents(dir_name, filenames, count, is_multiple_dirs);
     }
     else
     {
@@ -127,10 +127,11 @@ int process_directory(const char *dir_name)
 int process_arguments(int argc, char *argv[])
 {
     int no_dir_found = 0;
+    int is_multiple_dirs = (argc > 2);
 
     for (int i = 1; i < argc; i++)
     {
-        if (process_directory(argv[i]) == -1)
+        if (process_directory(argv[i], is_multiple_dirs) == -1)
         {
             no_dir_found = 1;
         }

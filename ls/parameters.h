@@ -5,14 +5,12 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
-#include <string.h>
 #include "utils.h"
 #include "hls.h"
 
 void print_error(const char *prog_name, const char *dir);
-void print_directory_contents(const char *dir_name, char **filenames,
-	size_t count, int multiple_dirs);
-int process_directory(const char *dir_name);
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int is_multiple_dirs);
+int process_directory(const char *dir_name, int is_multiple_dirs);
 int process_arguments(int argc, char *argv[]);
 
 #endif /* PARAMETERS_H */
