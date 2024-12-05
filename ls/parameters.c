@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
-#include <string.h>
+#include "hls.h"
+#include "utils.h"
 
 /**
  * strerror_custom - custom strerror function to handle errors.
