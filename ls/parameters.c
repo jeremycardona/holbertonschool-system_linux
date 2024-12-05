@@ -64,6 +64,7 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
  * @filenames: Array of filenames.
  * @count: The number of filenames.
  * @options: Options bitmask.
+ * @is_multiple_dirs: Flag indicating if multiple directories are being processed.
  */
 void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options, int is_multiple_dirs)
 {
@@ -159,7 +160,19 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 int process_arguments(int argc, char *argv[], int options)
 {
     int no_dir_found = 0;
-    int is_multiple_dirs = (argc > 1);
+    int is_multiple_dirs = 0;
+    int dir_count = 0;
+
+    // Count the number of directories/files
+    for (int i = 0; i < argc; i++)
+    {
+        if (argv[i][0] != '-')
+        {
+            dir_count++;
+        }
+    }
+
+    is_multiple_dirs = (dir_count > 1);
 
     for (int i = 0; i < argc; i++)
     {
