@@ -42,7 +42,23 @@ char *my_strcpy(char *dest, const char *src)
 
     return (dest);
 }
-
+/**
+ * my_strcmp - Compares two strings.
+ * @str1: The first string.
+ * @str2: The second string.
+ *
+ * Return: An integer less than, equal to, or greater than zero if str1 is found,
+ * respectively, to be less than, to match, or be greater than str2.
+ */
+int my_strcmp(const char *str1, const char *str2)
+{
+    while (*str1 && (*str1 == *str2))
+    {
+        str1++;
+        str2++;
+    }
+    return *(unsigned char *)str1 - *(unsigned char *)str2;
+}
 /**
  * my_tolower - Custom tolower function.
  * @c: The input character.

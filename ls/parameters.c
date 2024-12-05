@@ -56,8 +56,8 @@ void print_error(const char *prog_name, const char *dir, int is_permission_error
     {
         fprintf(stderr, "%s: cannot access %s: %s\n", prog_name, dir, strerror_custom(errno));
     }
+    perror(prog_name);
 }
-
 /**
  * print_directory_contents - Prints the directory contents.
  * @dir_name: The name of the directory.
@@ -93,7 +93,6 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
         printf("\n");  /* Print a newline after each directory's contents when not using -1 option */
     }
 }
-
 /**
  * process_directory - Processes a directory and lists its contents.
  * @dir_name: The directory name.
@@ -106,9 +105,9 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 {
     struct stat statbuf;
 
-    if (stat(dir_name, &statbuf) == -1)
+    if (lstat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_04", dir_name, 0);
+        perror("lstat");
         return (-1);
     }
 
@@ -118,7 +117,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_04", dir_name, 1);
+            perror("opendir");
             return (-1);
         }
 
@@ -128,14 +127,14 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         while ((entry = readdir(dir)) != NULL)
         {
-            // Skip hidden files unless -A option is specified
-            if (!(options & OPT_ALL) && entry->d_name[0] == '.')
+            // Skip hidden files unless -a or -A option is specified
+            if (!(options & OPT_ALL) && !(options & OPT_ALMOST_ALL) && entry->d_name[0] == '.')
             {
                 continue;
             }
 
             // Skip . and .. if -A option is specified
-            if ((options & OPT_ALL) && (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0))
+            if ((options & OPT_ALMOST_ALL) && (my_strcmp(entry->d_name, ".") == 0 || my_strcmp(entry->d_name, "..") == 0))
             {
                 continue;
             }

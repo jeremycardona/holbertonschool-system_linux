@@ -50,6 +50,7 @@ int parse_options(int argc, char *argv[], int *options)
                     break;
                 default:
                     fprintf(stderr, "hls: invalid option -- '%c'\n", argv[i][j]);
+                    perror("invalid option");
                     exit(EXIT_FAILURE);
                 }
             }
