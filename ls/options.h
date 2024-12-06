@@ -1,14 +1,13 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#define OPT_ONE_PER_LINE 1
-#define OPT_ALL 2
-#define OPT_ALMOST_ALL 4
-#define OPT_LONG_FORMAT 8
-#define OPT_REVERSE 16
-#define OPT_SORT_SIZE 32
-#define OPT_SORT_TIME 64
-#define OPT_RECURSIVE 128
+#define OPT_LONG_FORMAT  0x01
+#define OPT_ALL          0x02
+#define OPT_ALMOST_ALL   0x04
+#define OPT_REVERSE      0x08
+#define OPT_SORT_TIME    0x10
+#define OPT_SORT_SIZE    0x20
+#define OPT_ONE_PER_LINE 0x40
 
 int parse_options(int argc, char *argv[], int *options);
 

@@ -131,12 +131,8 @@ void print_file_info(const char *dir_name, const char *file_name)
  * @options: Options bitmask.
  * @is_multiple_dirs: Flag indicating if multiple directories are being processed.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options, int is_multiple_dirs)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options)
 {
-    if (is_multiple_dirs)
-    {
-        printf("%s:\n", dir_name);
-    }
 
     for (size_t j = 0; j < count; j++)
     {
@@ -173,7 +169,7 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(char *prog_name, const char *dir_name, int options, int is_multiple_dirs)
+int process_directory(char *prog_name, const char *dir_name, int options)
 {
     struct stat statbuf;
 
@@ -229,7 +225,7 @@ int process_directory(char *prog_name, const char *dir_name, int options, int is
         }
 
         sort_filenames(filenames, count, options);
-        print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
+        print_directory_contents(dir_name, filenames, count, options);
     }
     else
     {
@@ -265,17 +261,51 @@ int process_arguments(int argc, char *argv[], int options)
 
     is_multiple_dirs = (dir_count > 1);
 
+    // First, process non-directory files
     for (int i = file_start_index; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            if (process_directory(argv[0], argv[i], options, is_multiple_dirs) == -1)
+            struct stat statbuf;
+            if (lstat(argv[i], &statbuf) == -1)
             {
+                print_error(argv[0], argv[i], 0);
                 no_dir_found = 1;
+                continue;
             }
-            if (is_multiple_dirs && i < argc - 1)
+
+            if (!S_ISDIR(statbuf.st_mode))
             {
-                printf("\n");
+                printf("%s\n", argv[i]);
+            }
+        }
+    }
+
+    // Then, process directories
+    for (int i = file_start_index; i < argc; i++)
+    {
+        if (argv[i][0] != '-')
+        {
+            struct stat statbuf;
+            if (lstat(argv[i], &statbuf) == -1)
+            {
+                continue; // Already handled in the previous loop
+            }
+
+            if (S_ISDIR(statbuf.st_mode))
+            {
+                if (is_multiple_dirs)
+                {
+                    printf("%s:\n", argv[i]);
+                }
+                if (process_directory(argv[0], argv[i], options) == -1)
+                {
+                    no_dir_found = 1;
+                }
+                if (is_multiple_dirs && i < argc - 1)
+                {
+                    printf("\n");
+                }
             }
         }
     }
