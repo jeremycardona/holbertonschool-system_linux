@@ -265,17 +265,48 @@ int process_arguments(int argc, char *argv[], int options)
 
     is_multiple_dirs = (dir_count > 1);
 
+    // First, process non-directory files
     for (int i = file_start_index; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            if (process_directory(argv[0], argv[i], options, is_multiple_dirs) == -1)
+            struct stat statbuf;
+            if (lstat(argv[i], &statbuf) == -1)
             {
+                print_error(argv[0], argv[i], 0);
                 no_dir_found = 1;
+                continue;
             }
-            if (is_multiple_dirs && i < argc - 1)
+
+            if (!S_ISDIR(statbuf.st_mode))
             {
-                printf("\n");
+                printf("%s\n", argv[i]);
+            }
+        }
+    }
+
+    // Then, process directories
+    for (int i = file_start_index; i < argc; i++)
+    {
+        if (argv[i][0] != '-')
+        {
+            struct stat statbuf;
+            if (lstat(argv[i], &statbuf) == -1)
+            {
+                continue; // Already handled in the previous loop
+            }
+
+            if (S_ISDIR(statbuf.st_mode))
+            {
+                
+                if (process_directory(argv[0], argv[i], options, is_multiple_dirs) == -1)
+                {
+                    no_dir_found = 1;
+                }
+                if (is_multiple_dirs && i < argc - 1)
+                {
+                    printf("\n");
+                }
             }
         }
     }
