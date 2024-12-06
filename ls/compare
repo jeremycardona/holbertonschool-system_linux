@@ -131,13 +131,8 @@ void print_file_info(const char *dir_name, const char *file_name)
  * @options: Options bitmask.
  * @is_multiple_dirs: Flag indicating if multiple directories are being processed.
  */
-void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options, int is_multiple_dirs)
+void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options)
 {
-    if (is_multiple_dirs)
-    {
-        printf("%s:\n", dir_name);
-    }
-
     for (size_t j = 0; j < count; j++)
     {
         if (options & OPT_LONG_FORMAT)
@@ -173,7 +168,7 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(char *prog_name, const char *dir_name, int options, int is_multiple_dirs)
+int process_directory(char *prog_name, const char *dir_name, int options)
 {
     struct stat statbuf;
 
@@ -229,7 +224,7 @@ int process_directory(char *prog_name, const char *dir_name, int options, int is
         }
 
         sort_filenames(filenames, count, options);
-        print_directory_contents(dir_name, filenames, count, options, is_multiple_dirs);
+        print_directory_contents(dir_name, filenames, count, options);
     }
     else
     {
@@ -298,8 +293,11 @@ int process_arguments(int argc, char *argv[], int options)
 
             if (S_ISDIR(statbuf.st_mode))
             {
-                
-                if (process_directory(argv[0], argv[i], options, is_multiple_dirs) == -1)
+                if (is_multiple_dirs)
+                {
+                    printf("%s:\n", argv[i]);
+                }
+                if (process_directory(argv[0], argv[i], options) == -1)
                 {
                     no_dir_found = 1;
                 }
