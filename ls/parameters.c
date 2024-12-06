@@ -133,7 +133,6 @@ void print_file_info(const char *dir_name, const char *file_name)
  */
 void print_directory_contents(const char *dir_name, char **filenames, size_t count, int options)
 {
-
     for (size_t j = 0; j < count; j++)
     {
         if (options & OPT_LONG_FORMAT)
