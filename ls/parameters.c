@@ -173,13 +173,13 @@ void print_directory_contents(const char *dir_name, char **filenames, size_t cou
  *
  * Return: 0 if success, -1 if error.
  */
-int process_directory(const char *dir_name, int options, int is_multiple_dirs)
+int process_directory(char *prog_name, const char *dir_name, int options, int is_multiple_dirs)
 {
     struct stat statbuf;
 
     if (lstat(dir_name, &statbuf) == -1)
     {
-        print_error("./hls_05", dir_name, 0);
+        print_error(prog_name, dir_name, 0);
         return (-1);
     }
 
@@ -189,7 +189,7 @@ int process_directory(const char *dir_name, int options, int is_multiple_dirs)
 
         if (!dir)
         {
-            print_error("./hls_05", dir_name, 1);
+            print_error(prog_name, dir_name, 1);
             return (-1);
         }
 
@@ -252,9 +252,10 @@ int process_arguments(int argc, char *argv[], int options)
     int no_dir_found = 0;
     int is_multiple_dirs = 0;
     int dir_count = 0;
+    int file_start_index = 1; // Start from 1 to skip the program name
 
     // Count the number of directories/files
-    for (int i = 0; i < argc; i++)
+    for (int i = file_start_index; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
@@ -264,11 +265,11 @@ int process_arguments(int argc, char *argv[], int options)
 
     is_multiple_dirs = (dir_count > 1);
 
-    for (int i = 0; i < argc; i++)
+    for (int i = file_start_index; i < argc; i++)
     {
         if (argv[i][0] != '-')
         {
-            if (process_directory(argv[i], options, is_multiple_dirs) == -1)
+            if (process_directory(argv[0], argv[i], options, is_multiple_dirs) == -1)
             {
                 no_dir_found = 1;
             }

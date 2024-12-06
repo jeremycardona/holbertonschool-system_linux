@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    int result = process_arguments(argc - file_start_index, &argv[file_start_index], options);
+    int result = process_arguments(argc, argv, options);
 
     if (result == EXIT_FAILURE)
     {
