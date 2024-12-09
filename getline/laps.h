@@ -22,5 +22,6 @@ int createCar(int id);
 void freeCars(void);
 void updateLaps(int id);
 void printCars(void);
+int carExists(int id);
 
 #endif /* LAPS_H */
