@@ -1,42 +1,24 @@
-#ifndef LAPS_H
-#define LAPS_H
+#ifndef _GETLINE_H
+#define _GETLINE_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #define READ_SIZE 1024
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-/**
- * struct file_descriptor_node - singly linked list of file descriptors
- * @fd: file descriptor
- * @read_flag: if list has been read
- * @line_head: pointer to head of line_node linked list
- * @next: pointer to next node
- */
-typedef struct file_descriptor_node
+typedef struct line_head
 {
 	int fd;
-	size_t read_flag;
-	struct line_node *line_head;
-	struct file_descriptor_node *next;
-} file_descriptor_node;
-
-/**
- * struct line_node - singly linked list of strings
- * @line_number: line number
- * @content: string
- * @length: size of string
- * @next: pointer to next node
- */
-typedef struct line_node
-{
-	size_t line_number;
-	char *content;
-	size_t length;
-	struct line_node *next;
-} line_node;
+	int bytes;
+	char *buf;
+	struct line_head *next;
+} line_head;
 
 char *_getline(const int fd);
+char *read_line_chars(line_head *current_node);
+void free_lines(line_head *head);
+line_head *add_line(line_head **lines, const int fd, char *buf, int bytes);
+char *read_line(line_head *current_node);
 
-#endif /* LAPS_H */
+#endif /* _GETLINE_H */
