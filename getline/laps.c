@@ -18,13 +18,10 @@ void race_state(int *id, size_t size)
     // Check for new cars and add them
     checkNewCars(id, size);
 
-    // Print race state after adding new cars
-    printCars();
-
     // Update laps for existing cars
     updateLapsForCars(id, size);
 
-    // Print race state after updating laps
+    // Print race state after all updates
     printCars();
 }
 
