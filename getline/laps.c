@@ -18,7 +18,7 @@ void race_state(int *id, size_t size)
     // Check for new cars and add them
     checkNewCars(id, size);
 
-    // Update laps for existing cars
+    // Update laps for existing cars (cars with 0 laps initially)
     updateLapsForCars(id, size);
 
     // Print race state after all updates
@@ -81,9 +81,10 @@ int createCar(int id)
     if (new == NULL)
         return (1);
     new->id = id;
-    new->laps = 0;
+    new->laps = 0;  // Initialize laps to 0 when the car is created
     new->next = NULL;
 
+    // Insert car in sorted order
     if (cars == NULL || cars->id > id)
     {
         new->next = cars;
