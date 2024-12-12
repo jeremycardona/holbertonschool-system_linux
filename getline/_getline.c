@@ -95,7 +95,12 @@ char *read_line_chars(line_head *current_node)
         if (current_node->buf[i] == '\n') // End of line detected
         {
             line[i] = '\0';
-            memmove(current_node->buf, current_node->buf + i + 1, current_node->bytes - i - 1);
+            // Manually shift the buffer contents
+            size_t j;
+            for (j = i + 1; j < current_node->bytes; j++)
+            {
+                current_node->buf[j - (i + 1)] = current_node->buf[j];
+            }
             current_node->bytes -= (i + 1);
             return line;
         }
