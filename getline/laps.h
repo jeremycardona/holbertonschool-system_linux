@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct car_node {
-    int id;                 /* Car identifier */
-    size_t lap_count;      /* Number of laps completed */
-    struct car_node *next; /* Pointer to the next car */
+typedef struct car_node
+{
+	int id;				   /* Car identifier */
+	size_t lap_count;	   /* Number of laps completed */
+	struct car_node *next; /* Pointer to the next car */
 } car_node;
 
 /**
