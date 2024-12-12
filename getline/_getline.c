@@ -70,55 +70,57 @@ char *_getline(const int fd)
 }
 
 // Reads a line from the buffer, handling newline characters and shifting buffer contents
+// Reads a line from the buffer, handling newline characters and shifting buffer contents
 char *read_line_chars(line_head *current_node)
 {
-	size_t i = 0;
-	size_t line_len = 0;
-	char *line = NULL;
+    size_t i = 0;
+    size_t line_len = 0;
+    char *line = NULL;
 
-	// Scan buffer to find newline or end of data
-	while (i < (size_t)current_node->bytes)
-	{
-		if (line_len <= i) // Grow the line buffer as needed
-		{
-			line_len = i + READ_SIZE;
-			char *temp = realloc(line, line_len);
-			if (!temp)
-			{
-				free(line);
-				return (NULL);
-			}
-			line = temp;
-		}
+    // Scan buffer to find newline or end of data
+    while (i < (size_t)current_node->bytes)
+    {
+        if (line_len <= i) // Grow the line buffer as needed
+        {
+            line_len = i + READ_SIZE;
+            char *temp = realloc(line, line_len);
+            if (!temp)
+            {
+                free(line);
+                return (NULL);
+            }
+            line = temp;
+        }
 
-		line[i] = current_node->buf[i];
-		if (current_node->buf[i] == '\n') // End of line detected
-		{
-			line[i] = '\0';
-			// Manually shift the buffer contents
-			int j;
-			for (j = i + 1; j < current_node->bytes; j++)
-			{
-				current_node->buf[j - (i + 1)] = current_node->buf[j];
-			}
-			current_node->bytes -= (i + 1);
-			return line;
-		}
-		i++;
-	}
+        line[i] = current_node->buf[i];
+        if (current_node->buf[i] == '\n') // End of line detected
+        {
+            line[i] = '\0';
+            // Manually shift the buffer contents
+            int j;
+            for (j = i + 1; j < current_node->bytes; j++)
+            {
+                current_node->buf[j - (i + 1)] = current_node->buf[j];
+            }
+            current_node->bytes -= (i + 1);
+            return line;
+        }
+        i++;
+    }
 
-	// End of buffer reached without newline
-	if (i > 0)
-	{
-		line[i] = '\0';
-		current_node->bytes = 0;
-		return line;
-	}
+    // End of buffer reached without newline
+    if (i > 0)
+    {
+        line[i] = '\0';
+        current_node->bytes = 0;
+        return line;
+    }
 
-	// No data to return
-	free(line);
-	return NULL;
+    // No data to return
+    free(line);
+    return NULL;
 }
+
 
 // Frees the entire linked list and associated buffers
 void free_lines(line_head *head)
