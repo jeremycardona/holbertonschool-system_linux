@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * car_node - A node representing a car
+ *
+ * @id: Car identifier
+ * @lap_count: Number of laps completed
+ * @next: Pointer to the next car
+ */
+
+
 typedef struct car_node
 {
 	int id;				   /* Car identifier */
