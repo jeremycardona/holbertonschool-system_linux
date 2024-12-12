@@ -70,7 +70,7 @@ char *_getline(const int fd)
 			}
 			current_node->bytes = bytes_read;
 		}
-		line = read_line_from_buffer(current_node);
+		line = read_line(current_node);
 		if (line) /* Successfully read a line */
 			break;
 	}
@@ -78,12 +78,12 @@ char *_getline(const int fd)
 }
 
 /**
- * read_line_from_buffer - Reads a line from the buffer, handling newline characters
+ * read_line - Reads a line from the buffer, handling newline characters
  * @current_node: Pointer to the current line_head node containing the buffer
  *
  * Return: A string representing the extracted line or NULL if no line found
  */
-char *read_line_from_buffer(line_head *current_node)
+char *read_line(line_head *current_node)
 {
 	size_t i = 0;
 	size_t line_len = 0;
