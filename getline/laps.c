@@ -18,7 +18,8 @@ void race_state(int *id, size_t size)
 		freeCars();
 		return;
 	}
-	for (i = 0; i < size; i++)
+
+	for (i = 0; i <= size - 1; i++)
 	{
 		tmp = cars;
 		exists = 0;
@@ -44,10 +45,10 @@ void race_state(int *id, size_t size)
 			printf("Car %d joined the race\n", id[i]);
 		}
 	}
-	for (i = 0; i < size; i++)
-		updateLaps(id[i]);
 
 	printCars();
+	for (i = 0; i <= size - 1; i++)
+		updateLaps(id[i]);
 }
 
 /**
