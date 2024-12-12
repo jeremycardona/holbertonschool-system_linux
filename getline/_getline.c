@@ -133,6 +133,28 @@ void *realloc_and_parse(void *ptr, size_t old_size, size_t new_size,
 	return (new_ptr);
 }
 
+/**
+ * custom_strncat - concatenates two strings to at most n bytes
+ * @destination: destination string
+ * @source: string to copy
+ * @n: amount of bytes to copy
+ *
+ * Return: pointer to resulting string destination
+ */
+char *_strncat(char *destination, const char *source, size_t n)
+{
+	size_t destination_len;
+	size_t i;
+
+	for (i = 0; destination[i]; ++i)
+		;
+	destination_len = i;
+	for (i = 0; i < n && source[i]; ++i)
+		destination[destination_len + i] = source[i];
+	destination[destination_len + i] = '\0';
+
+	return (destination);
+}
 
 /**
  * parse_file_descriptor - parses given fd and creates appropriate file_descriptor_node
@@ -208,7 +230,7 @@ char *_getline(const int fd)
 	if (!fd_cur->read_flag)
 		for (; (byte = read(fd, buffer, READ_SIZE)) > 0; fd_cur->read_flag = 1)
 		{
-			strncat(file_content, buffer, READ_SIZE);
+			_strncat(file_content, buffer, READ_SIZE);
 			line_size += READ_SIZE;
 			file_content = realloc_and_parse(file_content, line_size - READ_SIZE, line_size, 0, NULL, NULL);
 			if (!file_content)
