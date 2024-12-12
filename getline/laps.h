@@ -5,10 +5,16 @@
 #include <stdlib.h>
 
 /*
- * car_node - A node representing a car
+ * struct car_node - A node representing a car
  * @id: Car identifier
  * @lap_count: Number of laps completed
  * @next: Pointer to the next car
+ * 
+ * Description: This structure represents
+ * a node in a linked list of cars.
+ * It contains the car identifier, the number
+ * of laps completed, and a pointer to the next car.
+ * 
  */
 
 
