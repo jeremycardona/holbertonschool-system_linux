@@ -15,7 +15,6 @@ void race_state(int *id, size_t size)
 
 	if (id == NULL || size == 0)
 	{
-		printCars();
 		freeCars();
 		return;
 	}
