@@ -96,7 +96,7 @@ char *read_line_chars(line_head *current_node)
         {
             line[i] = '\0';
             // Manually shift the buffer contents
-            size_t j;
+            int j;
             for (j = i + 1; j < current_node->bytes; j++)
             {
                 current_node->buf[j - (i + 1)] = current_node->buf[j];
