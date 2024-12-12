@@ -4,20 +4,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Car
-{
-    int id;
-    int laps;
-    struct Car *next;
-} Car;
+typedef struct car_node {
+    int id;                 /* Car identifier */
+    size_t lap_count;      /* Number of laps completed */
+    struct car_node *next; /* Pointer to the next car */
+} car_node;
 
-void race_state(int *id, size_t size);
-void printCars(void);
-void freeCars(void);
-int createCar(int id);
-void updateLaps(int id);
-void checkNewCars(int *id, size_t size);
-int carExists(int id);
-void updateLapsForCars(int *id, size_t size);
+/**
+ * print_race_state - Prints the state of the race.
+ * @head: Pointer to the head node of the linked list.
+ */
+void print_race_state(car_node **head);
+
+/**
+ * insert_sorted_car - Inserts a car node in the linked list in sorted order.
+ * @head: Pointer to the head node of the linked list.
+ * @new_car: Pointer to the new car node.
+ */
+void insert_sorted_car(car_node **head, car_node *new_car);
+
+/**
+ * create_car_node - Creates a new car node with the given id.
+ * @id: Car identifier.
+ *
+ * Return: A new car node.
+ */
+car_node *create_car_node(int id);
+
+/**
+ * check_new_cars - Checks for new cars and updates the race state.
+ * @head: Pointer to the head node of the linked list.
+ * @id_array: Array of car identifiers.
+ * @array_size: Size of the id array.
+ */
+void check_new_cars(car_node **head, int *id_array, size_t array_size);
+
+/**
+ * race_state - Tracks the number of laps made by cars in the race.
+ * @id_array: Array of car identifiers.
+ * @array_size: Size of the id array.
+ */
+void race_state(int *id_array, size_t array_size);
 
 #endif /* LAPS_H */
