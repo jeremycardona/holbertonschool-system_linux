@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
+/**
  * struct car_node - A node representing a car
  * @id: Car identifier
  * @lap_count: Number of laps completed
