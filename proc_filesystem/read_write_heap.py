@@ -15,7 +15,10 @@ def main():
     search_string = sys.argv[2]
     replace_string = sys.argv[3]
 
-
+	if len(replace_string) > len(search_string):
+    	print("Error: replace_string must not be longer than search_string")
+        sys.exit(1)
+        
     try:
         with open(f"/proc/{pid}/maps", "r") as maps_file:
             heap_info = None
