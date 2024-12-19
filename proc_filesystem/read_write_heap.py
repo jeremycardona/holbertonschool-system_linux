@@ -2,6 +2,10 @@
 import sys
 import os
 
+"""
+	main - read and write from proc heap
+"""
+
 def main():
     if len(sys.argv) < 4:
         print("Usage: python read_write_heap.py <pid> <search_string> <replace_string>")
