@@ -1,24 +1,38 @@
 #!/usr/bin/python3
+
+"""
+This script finds a string in the heap of a running process and replaces it.
+
+Usage: read_write_heap.py <pid> <search_string> <replace_string>
+where pid is the pid of the running process
+and strings are ASCII.
+The script looks only in the heap of the process.
+Output: prints relevant information or error messages.
+On usage error, prints an error message on stdout and exits with status code 1.
+"""
+
 import sys
 import os
 
-"""
-	main - read and write from proc heap
-"""
 
-def main():
-    if len(sys.argv) < 4:
-        print("Usage: python read_write_heap.py <pid> <search_string> <replace_string>")
-        sys.exit(1)
-    
-    pid = sys.argv[1]
-    search_string = sys.argv[2]
-    replace_string = sys.argv[3]
+def read_write_heap(pid, search_string, replace_string):
+    """
+    Reads the heap of a process and replaces a string.
 
-	if len(replace_string) > len(search_string):
-    	print("Error: replace_string must not be longer than search_string")
+    Args:
+        pid (str): The process ID.
+        search_string (str): The string to search for.
+        replace_string (str): The string to replace with.
+
+    Raises:
+        PermissionError: If the script does not have permission to read/write the process memory.
+        FileNotFoundError: If the process does not exist.
+        Exception: For any other exceptions.
+    """
+    if len(replace_string) > len(search_string):
+        print("Error: replace_string must not be longer than search_string")
         sys.exit(1)
-        
+
     try:
         with open(f"/proc/{pid}/maps", "r") as maps_file:
             heap_info = None
@@ -57,5 +71,14 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
 
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 4:
+        print("Usage: read_write_heap.py <pid> <search_string> <replace_string>")
+        sys.exit(1)
+
+    pid = sys.argv[1]
+    search_string = sys.argv[2]
+    replace_string = sys.argv[3]
+
+    read_write_heap(pid, search_string, replace_string)
