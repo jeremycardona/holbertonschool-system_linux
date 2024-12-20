@@ -57,12 +57,12 @@ def read_write_heap(pid, search_string, replace_string):
                 print("Error: search_string not found in heap")
                 sys.exit(1)
 
-            print(f"Found '{search_string}' at {index:x}")
-            print(f"Writing '{replace_string}' at {heap_start + index:x}")
+            #print(f"Found '{search_string}' at {index:x}")
+            #print(f"Writing '{replace_string}' at {heap_start + index:x}")
             mem_file.seek(heap_start + index)
             mem_file.write(bytes(replace_string + '\0', "ASCII"))
 
-            print(f"Replaced '{search_string}' with '{replace_string}' in process {pid} heap")
+            #print(f"Replaced '{search_string}' with '{replace_string}' in process {pid} heap")
 
     except PermissionError:
         print("Error: Permission denied. Try running as root.")
