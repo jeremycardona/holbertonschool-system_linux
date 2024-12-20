@@ -51,13 +51,16 @@ def read_write_heap(pid, search_string, replace_string):
             mem_file.seek(heap_start)
             heap = mem_file.read(heap_end - heap_start)
 
-            index = heap.find(search_string.encode())
-            if index == -1:
+            try:
+                index = heap.index(bytes(search_string, "ASCII"))
+            except ValueError:
                 print("Error: search_string not found in heap")
                 sys.exit(1)
 
+            print(f"Found '{search_string}' at {index:x}")
+            print(f"Writing '{replace_string}' at {heap_start + index:x}")
             mem_file.seek(heap_start + index)
-            mem_file.write(replace_string.encode() + b'\x00' * (len(search_string) - len(replace_string)))
+            mem_file.write(bytes(replace_string + '\0', "ASCII"))
 
             print(f"Replaced '{search_string}' with '{replace_string}' in process {pid} heap")
 
@@ -72,13 +75,32 @@ def read_write_heap(pid, search_string, replace_string):
         sys.exit(1)
 
 
-if __name__ == "__main__":
+def parse_argv():
+    """Parses through argv while checking for usage error
+
+    Returns:
+        pid, search_str, write_str
+    """
+    err_msg = "Usage: {} pid search write".format(sys.argv[0])
     if len(sys.argv) != 4:
-        print("Usage: read_write_heap.py <pid> <search_string> <replace_string>")
+        print(err_msg)
         sys.exit(1)
+    try:
+        pid = int(sys.argv[1])
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+    search_str = sys.argv[2]
+    write_str = sys.argv[3]
+    if pid < 1:
+        print(err_msg)
+        sys.exit(1)
+    if len(search_str) < len(write_str):
+        print("write_string longer than search_string")
+        sys.exit(1)
+    return pid, search_str, write_str
 
-    pid = sys.argv[1]
-    search_string = sys.argv[2]
-    replace_string = sys.argv[3]
 
-    read_write_heap(pid, search_string, replace_string)
+if __name__ == "__main__":
+    pid, search_str, write_str = parse_argv()
+    read_write_heap(pid, search_str, write_str)
