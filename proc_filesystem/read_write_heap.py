@@ -29,10 +29,6 @@ def read_write_heap(pid, search_string, replace_string):
         FileNotFoundError: If the process does not exist.
         Exception: For any other exceptions.
     """
-    if len(replace_string) > len(search_string):
-        print("Error: replace_string must not be longer than search_string")
-        sys.exit(1)
-
     try:
         with open(f"/proc/{pid}/maps", "r") as maps_file:
             heap_info = None
@@ -45,7 +41,8 @@ def read_write_heap(pid, search_string, replace_string):
             print("Error: Could not find heap segment")
             sys.exit(1)
 
-        heap_start, heap_end = [int(x, 16) for x in heap_info.split(" ")[0].split("-")]
+        heap_start, heap_end = [int(x, 16) \
+            for x in heap_info.split(" ")[0].split("-")]
 
         with open(f"/proc/{pid}/mem", "rb+") as mem_file:
             mem_file.seek(heap_start)
