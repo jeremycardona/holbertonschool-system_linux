@@ -25,10 +25,14 @@ def read_write_heap(pid, search_string, replace_string):
         replace_string (str): The string to replace with.
 
     Raises:
-        PermissionError: If the script does not have permission to read/write the process memory.
+        PermissionError: If the script does not have permission
         FileNotFoundError: If the process does not exist.
         Exception: For any other exceptions.
     """
+    if len(replace_string) > len(search_string):
+        print("Error: replace_string must not be longer than search_string")
+        sys.exit(1)
+
     try:
         with open(f"/proc/{pid}/maps", "r") as maps_file:
             heap_info = None
@@ -41,8 +45,8 @@ def read_write_heap(pid, search_string, replace_string):
             print("Error: Could not find heap segment")
             sys.exit(1)
 
-        heap_start, heap_end = [int(x, 16) \
-            for x in heap_info.split(" ")[0].split("-")]
+        heap_info_parts = heap_info.split(" ")[0].split("-")
+        heap_start, heap_end = [int(x, 16) for x in heap_info_parts]
 
         with open(f"/proc/{pid}/mem", "rb+") as mem_file:
             mem_file.seek(heap_start)
@@ -54,13 +58,8 @@ def read_write_heap(pid, search_string, replace_string):
                 print("Error: search_string not found in heap")
                 sys.exit(1)
 
-            #print(f"Found '{search_string}' at {index:x}")
-            #print(f"Writing '{replace_string}' at {heap_start + index:x}")
             mem_file.seek(heap_start + index)
             mem_file.write(bytes(replace_string + '\0', "ASCII"))
-
-            #print(f"Replaced '{search_string}' with '{replace_string}' in process {pid} heap")
-
     except PermissionError:
         print("Error: Permission denied. Try running as root.")
         sys.exit(1)
