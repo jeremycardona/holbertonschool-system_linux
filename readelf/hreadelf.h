@@ -58,23 +58,29 @@ typedef struct Elf
 } elf_t;
 
 /* utils.c */
-int of(char *name, int silent);
-int ce(char *elf_header);
-void pb(void *ptr, size_t n);
+int of(char *name, int silent); /* open_file */
+int ce(char *elf_header); /* check_elf */
+void pb(void *ptr, size_t n); /* print_bytes */
 
 /* endian.c */
-unsigned short se2(unsigned short n);
-unsigned int se4(unsigned int n);
-unsigned long se8(unsigned long n);
-void sae(elf_t *elf_header);
-void saes(elf_t *h, size_t i);
+unsigned short se2(unsigned short n); /* switch_endian2 */
+unsigned int se4(unsigned int n); /* switch_endian4 */
+unsigned long se8(unsigned long n); /* switch_endian8 */
+void sae(elf_t *elf_header); /* switch_all_endian */
+void saes(elf_t *h, size_t i); /* switch_all_endian_section */
+
+/* endian2.c */
+void saep(elf_t *h, size_t i); /* switch_all_endian_program */
+void saesym(elf_t *h, size_t i); /* switch_all_endian_symbol */
+void saever(elf_t *h, uint16_t *versym, size_t versym_size,
+    Elf64_Verneed *verneed, size_t verneed_size); /* switch_all_endian_ver */
 
 /* print_header_1.c */
-int ph(elf_t *elf_header);
-int pm(Elf64_Ehdr *elf_header);
-int pc(Elf64_Ehdr *elf_header);
-int pd(Elf64_Ehdr *elf_header);
-int pv(Elf64_Ehdr *elf_header);
+int ph(elf_t *elf_header); /* print_header */
+int pm(Elf64_Ehdr *elf_header); /* print_magic */
+int pc(Elf64_Ehdr *elf_header); /* print_class */
+int pd(Elf64_Ehdr *elf_header); /* print_data */
+int pv(Elf64_Ehdr *elf_header); /* print_version */
 
 /* print_header_2.c */
 int posabi(Elf64_Ehdr *elf_header); /* print_osabi */
@@ -96,5 +102,45 @@ int pf(elf_t *elf_header); /* print_flags */
 
 /* elf1.c */
 char *gt(elf_t *elf_header); /* get_type */
+
+/* print_programs1.c */
+int pphf(elf_t *elf_header, int fd); /* print_program_headers_full */
+void pph32(elf_t *elf_header, char *string_table, int fd); /* print_program_headers32 */
+void pph64(elf_t *elf_header, char *string_table, int fd); /* print_program_headers64 */
+void rph(elf_t *elf_header, int fd); /* read_program_headers */
+char *gsegtype(unsigned long p_type); /* get_segment_type */
+
+/* print_programs2.c */
+int ps2sm(elf_t *elf_header, char *string_table); /* print_section_to_segment_mapping */
+
+/* print_sections_1.c */
+int pshf(elf_t *elf_header, int fd); /* print_section_headers_full */
+void rsh(elf_t *elf_header, int fd); /* read_section_headers */
+char *rst(elf_t *elf_header, int fd); /* read_string_table */
+char *gst(unsigned int sh_type); /* get_section_type */
+
+/* print_sections_2.c */
+void psh32(elf_t *elf_header, char *string_table); /* print_section_headers32 */
+void psh64(elf_t *elf_header, char *string_table); /* print_section_headers64 */
+char *gsf(elf_t *elf_header, size_t i); /* get_section_flags */
+
+/* print_symbols1.c */
+int past(elf_t *elf_header, int fd); /* print_all_symbol_tables */
+void pst(elf_t *elf_header, int fd, size_t i, char *string_table); /* print_symbol_table */
+void pst32(elf_t *elf_header, char *string_table, char *sym_string_table, uint16_t *versym, Elf64_Verneed *verneed, size_t verneed_size, int section); /* print_symbol_table32 */
+void pst64(elf_t *elf_header, char *string_table, char *sym_string_table, uint16_t *versym, Elf64_Verneed *verneed, size_t verneed_size, int section); /* print_symbol_table64 */
+void pvi(elf_t *elf_header, char *sym_string_table, uint16_t *versym, Elf64_Verneed *verneed, size_t verneed_size, size_t i, size_t size, int section); /* print_verneed_info */
+
+/* print_symbols2.c */
+void rstbl(elf_t *elf_header, int fd, int i); /* read_symbol_table */
+char *rsst(elf_t *elf_header, int fd, int i); /* read_symbol_string_table */
+size_t fvi(Elf64_Verneed *verneed, size_t verneed_size, size_t index); /* find_verneed_index */
+void pvt(elf_t *elf_header, int fd, int i, char *sym_string_table, uint16_t *versym, Elf64_Verneed *verneed); /* print_verneed_table */
+void *rd(elf_t *elf_header, int fd, unsigned long offset, long size); /* read_data */
+
+/* print_symbols3.c */
+char *gstype(elf_t *elf_header, size_t i); /* get_sym_type */
+char *gsbind(elf_t *elf_header, size_t i); /* get_sym_bind */
+char *gsvis(elf_t *elf_header, size_t i); /* get_sym_visibility */
 
 #endif /* HREADELF_H */
