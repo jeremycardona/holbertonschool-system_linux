@@ -1,1 +1,0 @@
-void print_sec_to_seg_map(elf_t *elf_header, char *string_table);
